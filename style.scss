@@ -13,3 +13,11 @@ body {
   border: none;
   width: 100%;
 }
+div.error--active {
+  display: block;
+}
+.error {
+  display: none;
+  color: red;
+  margin-bottom: 5px;
+}
