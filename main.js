@@ -149,13 +149,20 @@
       tbody.append(str);
 
       return {
-        sth
+        str
       }
     };
-    
+    const thObj = {
+      th,
+      fullNameth,
+      facultyth,
+      birthth,
+      studyth
+     }
     return {
       table,
-      createColumn
+      createColumn,
+      thObj
     }
   }
   
@@ -165,6 +172,17 @@
     const title = createTitle('Students');
     const form = createForm()
     const table = createTable();
+    const ThObject = table.thObj;
+    ThObject.th.addEventListener('click', () => {
+      info.sort((a,b) => a.count > b.count ? 1 : -1);
+      storage(sessionId, info);
+      location.reload()
+    });
+    ThObject.fullNameth.addEventListener('click', () => {
+      info.sort((a,b) => a.createFullName > b.createFullName ? 1 : -1);
+      storage(sessionId, info);
+      location.reload()
+    })
     let info = [] ;
     let count = info.length;
 
@@ -217,15 +235,8 @@
         const endStudy = Number(startStudy) + 4;
         const yearStudy = `${startStudy}-${endStudy}`;
         const dateStudy = `${yearStudy} (${course})`;
-
         // creating Column
         const column = table.createColumn( count, createFullName, faculty, dateAge, dateStudy);
-
-        // count
-        let roo = Array.from(document.querySelectorAll('.count'));
-        let index = column;
-        index = roo.indexOf(index);
-        column.textContent = 'FFFFF'
         // info push
         info.push({count, createFullName, faculty, dateAge, dateStudy});
         storage(sessionId, info);
@@ -252,6 +263,7 @@
     })
     // storage getter: return items
     let storageItems = storage(sessionId);
+    // refreshing info and count
     info = storageItems;
     count = info.length;
     // restore session
