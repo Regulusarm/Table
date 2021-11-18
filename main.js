@@ -139,15 +139,20 @@
       
       sth.textContent = `${sthtxt}`;
       sth.setAttribute('scope', 'row');
+      sth.classList.add('count');
       fullNametd.textContent = fullNametdtxt;
       facultytd.textContent = facultytdtxt;
       birthtd.textContent = birthtdtxt;
       studytd.textContent = studytdtxt; 
       
       str.prepend(sth, fullNametd, facultytd, birthtd, studytd);
-      tbody.append(str)
-    };
+      tbody.append(str);
 
+      return {
+        sth
+      }
+    };
+    
     return {
       table,
       createColumn
@@ -155,26 +160,35 @@
   }
   
   
-  
   document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.container-sm'); 
     const title = createTitle('Students');
     const form = createForm()
     const table = createTable();
-    let count = 0;
-    
+    let info = [] ;
+    let count = info.length;
 
+    sessionId = 'Table.html';
+    let defaultItems = [] ;
+    
     container.append(title);
     container.appendChild(form.form);
     container.appendChild(table.table);
+    
+    function storage(name, value) {
+      return (value) ? localStorage.setItem(name, JSON.stringify(value)) : JSON.parse(localStorage.getItem(name)) || [];
+    }
+    
     form.form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
+      count++
 
       const createFullName = `${form.inputName.value} ${form.inputSurname.value} ${form.inputMidname.value}`;
       
       if(createFullName.trim().length >= 11 && form.faculty.value.trim().length > 2 && form.birthDate.value.length > 0 && form.studyDate.value.length > 0) {
-        count++
+
+        // faculty
+        let faculty = form.faculty.value
         // birthDate
         let dateAge = form.birthDate.value;
         dateStart = Date.parse(dateAge);
@@ -202,10 +216,20 @@
         startStudy = String(startStudy).split('-').join('.').substr(0, 4);
         const endStudy = Number(startStudy) + 4;
         const yearStudy = `${startStudy}-${endStudy}`;
-        const dateStudy = `${yearStudy} (${course})`
-         
-        const column = table.createColumn( count, createFullName, form.faculty.value , dateAge, dateStudy);
-        
+        const dateStudy = `${yearStudy} (${course})`;
+
+        // creating Column
+        const column = table.createColumn( count, createFullName, faculty, dateAge, dateStudy);
+
+        // count
+        let roo = Array.from(document.querySelectorAll('.count'));
+        let index = column;
+        index = roo.indexOf(index);
+        column.textContent = 'FFFFF'
+        // info push
+        info.push({count, createFullName, faculty, dateAge, dateStudy});
+        storage(sessionId, info);
+
         const input = Array.from(document.querySelectorAll('input'));
         input.map((el) => {
           el.classList.add('mb-3')
@@ -225,9 +249,15 @@
           el.classList.add('error--active');
         });
       }
-        
-
     })
+    // storage getter: return items
+    let storageItems = storage(sessionId);
+    info = storageItems;
+    count = info.length;
+    // restore session
+    let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+    for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    
   })
   
 
