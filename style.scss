@@ -20,4 +20,10 @@ div.error--active {
   display: none;
   color: red;
   margin-bottom: 5px;
+};
+[scope ="col"] {
+  cursor: pointer;
+};
+[scope ="col"]:hover {
+  background-color: rgb(204, 204, 204);
 }

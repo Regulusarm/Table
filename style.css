@@ -28,4 +28,12 @@ div.error--active {
   color: red;
   margin-bottom: 5px;
 }
+
+[scope="col"] {
+  cursor: pointer;
+}
+
+[scope="col"]:hover {
+  background-color: #cccccc;
+}
 /*# sourceMappingURL=style.css.map */

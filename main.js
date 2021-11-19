@@ -182,10 +182,33 @@
       info.sort((a,b) => a.createFullName > b.createFullName ? 1 : -1);
       storage(sessionId, info);
       location.reload()
-    })
-    let info = [] ;
-    let count = info.length;
-
+    });
+    ThObject.facultyth.addEventListener('click', () => {
+      info.sort((a,b) => a.faculty > b.faculty ? 1 : -1);
+      storage(sessionId, info);
+      location.reload()
+    });
+    ThObject.birthth.addEventListener('click', () => {
+      info.sort((a,b) => {
+        let ageA = Date.parse(a.dateAge.substr(0,10).split('.').reverse().join('-'));
+        let ageB = Date.parse(b.dateAge.substr(0,10).split('.').reverse().join('-'));
+        return (ageA > ageB) ? -1 : 1;
+      })
+      storage(sessionId, info);
+      location.reload()
+      });
+    ThObject.studyth.addEventListener('click', () => {
+      info.sort((a,b) => {
+        let studyA = a.dateStudy.substr(0,4);
+        let studyB = b.dateStudy.substr(0,4);
+        return (studyA > studyB) ? -1 : 1;
+      })
+      storage(sessionId, info);
+      location.reload()
+    });
+        let info = [] ;
+        let count = info.length;
+        
     sessionId = 'Table.html';
     let defaultItems = [] ;
     
@@ -200,8 +223,8 @@
     form.form.addEventListener('submit', (e) => {
       e.preventDefault();
       count++
-
-      const createFullName = `${form.inputName.value} ${form.inputSurname.value} ${form.inputMidname.value}`;
+      
+      const createFullName = `${ form.inputName.value.substr(0, 1).toUpperCase() + form.inputName.value.substr(1) } ${form.inputSurname.value} ${form.inputMidname.value}`;
       
       if(createFullName.trim().length >= 11 && form.faculty.value.trim().length > 2 && form.birthDate.value.length > 0 && form.studyDate.value.length > 0) {
 
