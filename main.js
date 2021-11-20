@@ -1,7 +1,7 @@
 (() => {
   
-  function createTitle(text) {
-    let title = document.createElement('h2');
+  function createTitle(text, element = 'h2') {
+    let title = document.createElement(element);
     title.innerHTML = text;
     title.classList.add('col-sm-6','mb-3')
     return title;
@@ -207,7 +207,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.container-sm'); 
     const sectionForms = document.createElement('section');
-    sectionForms.classList.add('row')
+    sectionForms.classList.add('row');
+    const appTitle = createTitle('Students', 'h1');
+    appTitle.classList.add('col-sm-12');
+    appTitle.style.backgroundColor = '#18A7FF';
+    appTitle.style.textAlign = 'center';
+    appTitle.style.color = 'white'
     const formTitle = createTitle('Добавить студента');
     const filterTitle = createTitle('Фильтр Студентов');
     const form = createForm();
@@ -215,18 +220,27 @@
     const table = createTable();
     const ThObject = table.thObj;
     let info = [] ;
+    let clonInfo;
     let count = info.length;
     const sessionId = 'Table.html';
-    let defaultItems = [] ;
-
+    let defaultItems = [];
     filter.searchName.addEventListener('keyup', () => {
-      let clonInfo;
-      clonInfo = info.filter(student => {
+       if(!clonInfo || clonInfo.length == 0) { 
+        clonInfo = info.filter(student => {
         const studentLow = student.createFullName.toLowerCase();
-        if(studentLow.includes(filter.searchName.value.toLowerCase())) {
+        if(studentLow.includes(filter.searchName.value.trim().toLowerCase())) {
          return true
         };
-      })
+      })} else {
+        if(!filter.searchName.value.trim().toLowerCase() ) {
+          clonInfo = clonInfo.filter(student => {
+            const studentLow = student.createFullName.toLowerCase();
+            if(studentLow.includes(filter.searchName.value.trim().toLowerCase())) {
+              return true
+            };
+          });
+        }
+      }
       // deleting columns
       const tableBody = table.tbody;
       while (tableBody.firstChild) {
@@ -236,13 +250,22 @@
       for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
     });
     filter.searchFaculty.addEventListener('keyup', () => {
-      let clonInfo;
-      clonInfo = info.filter(fc => {
+      if(!clonInfo || clonInfo.length == 0) {
+        clonInfo = info.filter(fc => {
         const fcLow = fc.faculty.toLowerCase();
-        if(fcLow.includes(filter.searchFaculty.value.toLowerCase())) {
+        if(fcLow.includes(filter.searchFaculty.value.trim().toLowerCase())) {
           return true
         };
-      })
+        })} else {
+        if(!filter.searchFaculty.value.trim().toLowerCase()) {
+          clonInfo = info
+        } else {clonInfo = clonInfo.filter(fc => {
+          const fcLow = fc.faculty.toLowerCase();
+          if(fcLow.includes(filter.searchFaculty.value.trim().toLowerCase())) {
+            return true
+          };
+        })};
+      }
       // deleting columns
       const tableBody = table.tbody;
       while (tableBody.firstChild) {
@@ -252,13 +275,22 @@
       for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
     });
     filter.startStudy.addEventListener('keyup', () => {
-      let clonInfo;
-      clonInfo = info.filter(year => {
-        startYear = year.dateStudy.substr(0,3);
+       if(!clonInfo || clonInfo.length == 0) {
+        clonInfo = info.filter(year => {
+        startYear = year.dateStudy.substr(0,4);
         if(startYear.includes(filter.startStudy.value)) {
           return true
         }
-      })
+      })} else {
+        if(!filter.startStudy.value) {
+          clonInfo = info
+        } else {clonInfo = clonInfo.filter(year => {
+          startYear = year.dateStudy.substr(0,4);
+          if(startYear.includes(filter.startStudy.value)) {
+            return true
+          };
+        })};
+      }
       // deleting columns
       const tableBody = table.tbody;
       while (tableBody.firstChild) {
@@ -268,14 +300,22 @@
       for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
     });
     filter.endStudy.addEventListener('keyup', () => {
-      let clonInfo;
-      clonInfo = info.filter(year => {
-        endYear = year.dateStudy.substr(5,);
+       if(!clonInfo || clonInfo.length == 0) {
+        clonInfo = info.filter(year => {
+        endYear = year.dateStudy.substr(5,9);
         if(endYear.includes(filter.endStudy.value)) {
           return true
         }
-      });
-      console.log(year.dateStudy.substr(5,10))
+      })} else {
+        if(!filter.endStudy.value) {
+          clonInfo = info
+        } else {clonInfo = clonInfo.filter(year => {
+          endYear = year.dateStudy.substr(5,9);
+          if(endYear.includes(filter.endStudy.value)) {
+            return true
+          };
+        })};
+      }
       // deleting columns
       const tableBody = table.tbody;
       while (tableBody.firstChild) {
@@ -365,7 +405,7 @@
     });
     
     sectionForms.prepend(formTitle, filterTitle, form.form, filter.filter);
-    container.prepend(sectionForms ,table.table);
+    container.prepend(appTitle, sectionForms ,table.table);
     
     function storage(name, value) {
       return (value) ? localStorage.setItem(name, JSON.stringify(value)) : JSON.parse(localStorage.getItem(name)) || [];
@@ -375,10 +415,10 @@
       e.preventDefault();
       count++
       
-      const createFullName = `${ form.inputName.value.substr(0, 1).toUpperCase() + form.inputName.value.substr(1) } ${form.inputSurname.value} ${form.inputMidname.value}`;
       
-      if(createFullName.trim().length >= 11 && form.faculty.value.trim().length > 2 && form.birthDate.value.length > 0 && form.studyDate.value.length > 0) {
-
+      if(form.inputName.value.trim().length >= 3 && form.inputSurname.value.trim().length >=3 && form.inputMidname.value.trim().length >=3 && form.inputMidname.value.trim().length >=3 && form.faculty.value.trim().length > 2 && form.birthDate.value.length > 0 && form.studyDate.value.length > 0) {
+        // getFullName
+        const createFullName = `${ form.inputName.value.trim().substr(0, 1).toUpperCase() + form.inputName.value.trim().substr(1).toLowerCase() } ${form.inputSurname.value.trim().substr(0,1).toUpperCase() + form.inputSurname.value.trim().substr(1).toLowerCase()} ${form.inputMidname.value.trim().substr(0,1).toUpperCase() + form.inputMidname.value.trim().substr(1).toLowerCase()}`;
         // faculty
         let faculty = form.faculty.value
         // birthDate
@@ -424,6 +464,13 @@
         error.map((el) => {
           el.classList.remove('error--active');
         });
+
+        form.inputName.value = '';
+        form.inputSurname.value = '';
+        form.inputMidname.value = '';
+        form.birthDate.value = '';
+        form.studyDate.value = '';
+        form.faculty.value = '';
       } else {
         const input = Array.from(document.querySelectorAll('fieldset input'));
         input.map((el) => {
