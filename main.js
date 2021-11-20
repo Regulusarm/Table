@@ -1,10 +1,10 @@
 (() => {
   
-  function createTitle(title) {
-    let appTitle = document.createElement('h2');
-    appTitle.innerHTML = title;
-    appTitle.classList.add('mb-3', 'mt-3')
-    return appTitle;
+  function createTitle(text) {
+    let title = document.createElement('h2');
+    title.innerHTML = text;
+    title.classList.add('col-sm-6','mb-3')
+    return title;
   }
   
   function createForm() {
@@ -31,7 +31,7 @@
     const lblFaculty = document.createElement('label')
     const faculty = document.createElement('input');
     
-    form.classList.add('form','mb-3', 'row');
+    form.classList.add('form','col-sm-6');
     field.classList.add('form-fieldset', 'mb-3');
     lbl.classList.add('form-label');
     lbl.textContent = 'Ф.И.О';
@@ -92,13 +92,7 @@
       birthDate,
       studyDate,
       faculty,
-      form,
-      // validEr1,
-      // validEr2,
-      // validEr3,
-      // validEr4,
-      // validEr5,
-      // validEr6,
+      form
     }
   };
   
@@ -162,31 +156,176 @@
     return {
       table,
       createColumn,
-      thObj
+      thObj,
+      tbody
     }
   }
   
+  function createFilter() {
+    const filter = document.createElement('form');
+    const lblName = document.createElement('label');
+    const searchName = document.createElement('input');
+    const lblFaculty = document.createElement('label');
+    const searchFaculty = document.createElement('input');
+    const lblStartStudy = document.createElement('label');
+    const startStudy = document.createElement('input');
+    const lblEndStudy = document.createElement('label');
+    const endStudy = document.createElement('input');
+
+    filter.classList.add('filter','col-sm-6');
+    lblName.classList.add('form-label');
+    lblName.textContent = 'Поиск по Ф.И.О';
+    searchName.classList.add('form-control', 'mb-3');
+    searchName.placeholder = 'Ф.И.О';
+    lblFaculty.classList.add('form-label');
+    lblFaculty.textContent = 'Поиск по Факультету';
+    searchFaculty.classList.add('form-control', 'mb-3');
+    searchFaculty.placeholder = 'Факультет';
+    lblStartStudy.classList.add('form-label');
+    lblStartStudy.textContent = 'Поиск по году начала обучения';
+    startStudy.classList.add('form-control', 'mb-3');
+    startStudy.placeholder = 'Год начала обучения';
+    startStudy.setAttribute('type', 'number');
+    lblEndStudy.classList.add('form-label');
+    lblEndStudy.textContent = 'Поиск по году окончания обучения';
+    endStudy.classList.add('form-control', 'mb-3');
+    endStudy.placeholder = 'Год окончания обучения';
+    endStudy.setAttribute('type', 'number');
+
+    filter.prepend(lblName, searchName, lblFaculty, searchFaculty, lblStartStudy, startStudy, lblEndStudy, endStudy);
+    
+    return {
+      filter,
+      searchName,
+      searchFaculty,
+      startStudy,
+      endStudy
+    }
+  }
+
   
   document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.container-sm'); 
-    const title = createTitle('Students');
-    const form = createForm()
+    const sectionForms = document.createElement('section');
+    sectionForms.classList.add('row')
+    const formTitle = createTitle('Добавить студента');
+    const filterTitle = createTitle('Фильтр Студентов');
+    const form = createForm();
+    const filter = createFilter();
     const table = createTable();
     const ThObject = table.thObj;
+    let info = [] ;
+    let count = info.length;
+    const sessionId = 'Table.html';
+    let defaultItems = [] ;
+
+    filter.searchName.addEventListener('keyup', () => {
+      let clonInfo;
+      clonInfo = info.filter(student => {
+        const studentLow = student.createFullName.toLowerCase();
+        if(studentLow.includes(filter.searchName.value.toLowerCase())) {
+         return true
+        };
+      })
+      // deleting columns
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating columns
+      for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    });
+    filter.searchFaculty.addEventListener('keyup', () => {
+      let clonInfo;
+      clonInfo = info.filter(fc => {
+        const fcLow = fc.faculty.toLowerCase();
+        if(fcLow.includes(filter.searchFaculty.value.toLowerCase())) {
+          return true
+        };
+      })
+      // deleting columns
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating columns
+      for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    });
+    filter.startStudy.addEventListener('keyup', () => {
+      let clonInfo;
+      clonInfo = info.filter(year => {
+        startYear = year.dateStudy.substr(0,3);
+        if(startYear.includes(filter.startStudy.value)) {
+          return true
+        }
+      })
+      // deleting columns
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating columns
+      for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    });
+    filter.endStudy.addEventListener('keyup', () => {
+      let clonInfo;
+      clonInfo = info.filter(year => {
+        endYear = year.dateStudy.substr(5,);
+        if(endYear.includes(filter.endStudy.value)) {
+          return true
+        }
+      });
+      console.log(year.dateStudy.substr(5,10))
+      // deleting columns
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating columns
+      for(let item of clonInfo) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    })
+    
     ThObject.th.addEventListener('click', () => {
       info.sort((a,b) => a.count > b.count ? 1 : -1);
       storage(sessionId, info);
-      location.reload()
+      // deleting colunms
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating new colunms
+      let storageItems = storage(sessionId);
+      let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+      for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    
     });
     ThObject.fullNameth.addEventListener('click', () => {
       info.sort((a,b) => a.createFullName > b.createFullName ? 1 : -1);
       storage(sessionId, info);
-      location.reload()
+      // deleting colunms
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating new colunms
+      let storageItems = storage(sessionId);
+      let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+      for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    
     });
     ThObject.facultyth.addEventListener('click', () => {
       info.sort((a,b) => a.faculty > b.faculty ? 1 : -1);
       storage(sessionId, info);
-      location.reload()
+      // deleting colunms
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating new colunms
+      let storageItems = storage(sessionId);
+      let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+      for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    
     });
     ThObject.birthth.addEventListener('click', () => {
       info.sort((a,b) => {
@@ -195,7 +334,16 @@
         return (ageA > ageB) ? -1 : 1;
       })
       storage(sessionId, info);
-      location.reload()
+      // deleting colunms
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating new colunms
+      let storageItems = storage(sessionId);
+      let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+      for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
+    
       });
     ThObject.studyth.addEventListener('click', () => {
       info.sort((a,b) => {
@@ -204,17 +352,20 @@
         return (studyA > studyB) ? -1 : 1;
       })
       storage(sessionId, info);
-      location.reload()
-    });
-        let info = [] ;
-        let count = info.length;
-        
-    sessionId = 'Table.html';
-    let defaultItems = [] ;
+      // deleting colunms
+      const tableBody = table.tbody;
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.lastChild);
+      };
+      // creating new colunms
+      let storageItems = storage(sessionId);
+      let sessionItems = (storageItems.length == 0) ? defaultItems : storageItems;
+      for(let item of sessionItems) {table.createColumn(item.count, item.createFullName, item.faculty, item.dateAge, item.dateStudy)};
     
-    container.append(title);
-    container.appendChild(form.form);
-    container.appendChild(table.table);
+    });
+    
+    sectionForms.prepend(formTitle, filterTitle, form.form, filter.filter);
+    container.prepend(sectionForms ,table.table);
     
     function storage(name, value) {
       return (value) ? localStorage.setItem(name, JSON.stringify(value)) : JSON.parse(localStorage.getItem(name)) || [];
@@ -264,7 +415,7 @@
         info.push({count, createFullName, faculty, dateAge, dateStudy});
         storage(sessionId, info);
 
-        const input = Array.from(document.querySelectorAll('input'));
+        const input = Array.from(document.querySelectorAll('fieldset input'));
         input.map((el) => {
           el.classList.add('mb-3')
         });
@@ -274,7 +425,7 @@
           el.classList.remove('error--active');
         });
       } else {
-        const input = Array.from(document.querySelectorAll('input'));
+        const input = Array.from(document.querySelectorAll('fieldset input'));
         input.map((el) => {
           el.classList.remove('mb-3')
         });
