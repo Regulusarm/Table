@@ -224,7 +224,7 @@
     let count = info.length;
     const sessionId = 'Table.html';
     let defaultItems = [];
-    filter.searchName.addEventListener('keyup', () => {
+    filter.searchName.addEventListener('keyup', function search() {
        if(!clonInfo || clonInfo.length == 0) { 
         clonInfo = info.filter(student => {
         const studentLow = student.createFullName.toLowerCase();
@@ -233,6 +233,8 @@
         };
       })} else {
         if(!filter.searchName.value.trim().toLowerCase() ) {
+          clonInfo = info
+        } else {
           clonInfo = clonInfo.filter(student => {
             const studentLow = student.createFullName.toLowerCase();
             if(studentLow.includes(filter.searchName.value.trim().toLowerCase())) {
