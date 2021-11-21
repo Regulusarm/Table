@@ -64,12 +64,14 @@
     lblbirth.textContent = 'Дата рождения';
     lblbirth.setAttribute('for', 'birthDate');
     birthDate.setAttribute('type', 'date');
+    birthDate.setAttribute('min', '1900-01-01');
     birthDate.classList.add('date','mb-3');
     birthDate.id = 'birthDate';
     lblStudyDate.classList.add('form-label');
     lblStudyDate.textContent = 'Год начала обучения'
     lblStudyDate.setAttribute('for', 'studyDate');
     studyDate.setAttribute('type', 'date');
+    studyDate.setAttribute('min', '2000-01-01')
     studyDate.classList.add('date', 'mb-3');
     studyDate.id = 'studyDate';
     lblFaculty.classList.add('form-label')
@@ -224,7 +226,7 @@
     let count = info.length;
     const sessionId = 'Table.html';
     let defaultItems = [];
-    filter.searchName.addEventListener('keyup', function search() {
+    filter.searchName.addEventListener('keyup', () => {
        if(!clonInfo || clonInfo.length == 0) { 
         clonInfo = info.filter(student => {
         const studentLow = student.createFullName.toLowerCase();
@@ -415,7 +417,6 @@
     
     form.form.addEventListener('submit', (e) => {
       e.preventDefault();
-      count++
       
       
       if(form.inputName.value.trim().length >= 3 && form.inputSurname.value.trim().length >=3 && form.inputMidname.value.trim().length >=3 && form.inputMidname.value.trim().length >=3 && form.faculty.value.trim().length > 2 && form.birthDate.value.length > 0 && form.studyDate.value.length > 0) {
@@ -446,7 +447,7 @@
             course += ' курс'
           }
         };
-          checkCourse();
+        checkCourse();
         startStudy = String(startStudy).split('-').join('.').substr(0, 4);
         const endStudy = Number(startStudy) + 4;
         const yearStudy = `${startStudy}-${endStudy}`;
@@ -456,23 +457,24 @@
         // info push
         info.push({count, createFullName, faculty, dateAge, dateStudy});
         storage(sessionId, info);
-
+        
         const input = Array.from(document.querySelectorAll('fieldset input'));
         input.map((el) => {
           el.classList.add('mb-3')
         });
-
+        
         const error = Array.from(document.querySelectorAll('.error'));
         error.map((el) => {
           el.classList.remove('error--active');
         });
-
+        
         form.inputName.value = '';
         form.inputSurname.value = '';
         form.inputMidname.value = '';
         form.birthDate.value = '';
         form.studyDate.value = '';
         form.faculty.value = '';
+        count++
       } else {
         const input = Array.from(document.querySelectorAll('fieldset input'));
         input.map((el) => {
@@ -482,7 +484,8 @@
         error.map((el) => {
           el.classList.add('error--active');
         });
-      }
+      };
+      
     })
     // storage getter: return items
     let storageItems = storage(sessionId);
